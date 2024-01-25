@@ -1,4 +1,4 @@
-package hash
+package hasher
 
 import (
 	"devoratio.dev/web-resume/internal/errorx"
