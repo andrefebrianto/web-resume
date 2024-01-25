@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"devoratio.dev/web-resume/internal/errorx"
-	"devoratio.dev/web-resume/internal/hash"
+	"devoratio.dev/web-resume/internal/hasher"
 	"devoratio.dev/web-resume/model"
 )
 
@@ -35,7 +35,7 @@ func (a *Authentication) Authenticate(ctx context.Context, identifier, password 
 		return nil, err
 	}
 
-	err = hash.VerifyPassword(ownerAccount.Password, password)
+	err = hasher.VerifyPassword(ownerAccount.Password, password)
 	if err != nil {
 		if errors.Is(err, errorx.ErrNotMatch) {
 			return nil, errorx.New(errorx.TypeInvalidParameter, invalidInputMessage, err)
