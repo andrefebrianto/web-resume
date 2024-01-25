@@ -1,6 +1,8 @@
 package hasher
 
 import (
+	"errors"
+
 	"devoratio.dev/web-resume/internal/errorx"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,7 +21,10 @@ func GenerateFromPassword(password string) (string, error) {
 func VerifyPassword(hashedPassword, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		return errorx.New(errorx.TypeUnauthorized, errorx.TypeUnauthorized.String(), err)
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return errorx.ErrNotMatch
+		}
+		return errorx.New(errorx.TypeInternal, errorx.TypeInternal.String(), err)
 	}
 
 	return nil
