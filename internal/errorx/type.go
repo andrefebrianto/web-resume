@@ -20,6 +20,7 @@ const (
 	TypeNotImplemented     Type = "NOT_IMPLEMENTED"
 	TypeBadGateway         Type = "BAD_GATEWAY"
 	TypeServiceUnavailable Type = "SERVICE_UNAVAILABLE"
+	TypeNotMatch           Type = "NOT_MATCH"
 )
 
 var TypeToCode = map[Type]int{
@@ -31,6 +32,7 @@ var TypeToCode = map[Type]int{
 	TypeNotImplemented:     http.StatusNotImplemented,
 	TypeBadGateway:         http.StatusBadGateway,
 	TypeServiceUnavailable: http.StatusServiceUnavailable,
+	TypeNotMatch:           http.StatusBadRequest,
 }
 
 // Predefined Errors
@@ -82,5 +84,11 @@ var (
 		Message: TypeServiceUnavailable.String(),
 		Code:    TypeToCode[TypeServiceUnavailable],
 		Err:     errors.New(TypeServiceUnavailable.String()),
+	}
+	ErrNotMatch = &Error{
+		Type:    TypeNotMatch,
+		Message: TypeNotMatch.String(),
+		Code:    TypeToCode[TypeNotMatch],
+		Err:     errors.New(TypeNotMatch.String()),
 	}
 )
