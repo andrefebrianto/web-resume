@@ -22,8 +22,10 @@ var _ = Describe("Authenticate user credential", Label("authentication"), func()
 
 		authenticateUsecase *usecase.Authentication
 
-		identifier = "devoratio"
-		commonCtx  = context.Background()
+		identifier            = "devoratio"
+		commonCtx             context.Context
+		ownerAccountStub      model.OwnerAccount
+		errorInvalidParameter *errorx.Error
 	)
 
 	BeforeEach(func() {
@@ -33,6 +35,13 @@ var _ = Describe("Authenticate user credential", Label("authentication"), func()
 		authenticationRepoMock = repositorymock.NewMockAuthenticationRepository(mockController)
 
 		authenticateUsecase = usecase.NewUsecase(authenticationRepoMock)
+
+		gofakeit.Struct(&ownerAccountStub)
+		ownerAccountStub.Password = "$2a$12$hWASkUwEkcS1CbsyRRwoBew5r7qwmXwH4YJyP.S149hghOg77UEQW"
+
+		commonCtx = context.Background()
+
+		errorInvalidParameter = errorx.New(errorx.TypeInvalidParameter, "username or email or password is invalid", nil)
 	})
 
 	AfterEach(func() {
@@ -56,14 +65,11 @@ var _ = Describe("Authenticate user credential", Label("authentication"), func()
 		Context("owner data retrieved successfully", func() {
 			It("sends access token and refresh token to the user", func() {
 				password := "veryverysecurepassword"
-				var ownerAccountStub model.OwnerAccount
-				gofakeit.Struct(&ownerAccountStub)
-				ownerAccountStub.Password = "$2a$12$hWASkUwEkcS1CbsyRRwoBew5r7qwmXwH4YJyP.S149hghOg77UEQW"
 
 				authenticationRepoMock.EXPECT().GetOwnerByUsernameOrEmail(commonCtx, identifier).Return(&ownerAccountStub, nil)
 
 				result, err := authenticateUsecase.Authenticate(commonCtx, identifier, password)
-				Expect(result).Should(Equal(ownerAccountStub.Owner))
+				Expect(result).Should(Equal(&(ownerAccountStub.Owner)))
 				Expect(err).Should(BeNil())
 			})
 		})
@@ -71,13 +77,15 @@ var _ = Describe("Authenticate user credential", Label("authentication"), func()
 	})
 
 	When("the user send username or email that does not exist in the database", func() {
-		It("tells the user username or email or password is invalid", func() {
+		It("tells the user username or email or password is invalid", func(ctx SpecContext) {
 			password := "twinkling"
 
 			authenticationRepoMock.EXPECT().GetOwnerByUsernameOrEmail(commonCtx, identifier).Return(nil, errorx.ErrNotFound)
 
 			result, err := authenticateUsecase.Authenticate(commonCtx, identifier, password)
-			Expect(err).Should(Equal(errorx.ErrInvalidParameter))
+			Expect(err.(*errorx.Error).Code).Should(Equal(errorInvalidParameter.Code))
+			Expect(err.(*errorx.Error).Message).Should(Equal(errorInvalidParameter.Message))
+			Expect(err.(*errorx.Error).Type).Should(Equal(errorInvalidParameter.Type))
 			Expect(result).Should(BeNil())
 		}, SpecTimeout(time.Second*2))
 	})
@@ -96,16 +104,16 @@ var _ = Describe("Authenticate user credential", Label("authentication"), func()
 		})
 
 		Context("owner data retrieved successfully", func() {
-			It("tells the user that the username or email or password is invalid", func() {
+			It("tells the user that the username or email or password is invalid", func(ctx SpecContext) {
 				password := "twinkling"
-				var ownerAccountStub model.OwnerAccount
-				gofakeit.Struct(&ownerAccountStub)
 
 				authenticationRepoMock.EXPECT().GetOwnerByUsernameOrEmail(commonCtx, identifier).Return(&ownerAccountStub, nil)
 
 				result, err := authenticateUsecase.Authenticate(commonCtx, identifier, password)
-				Expect(err).Should(Equal(errorx.ErrInvalidParameter))
-				Expect(result).ShouldNot(BeNil())
+				Expect(err.(*errorx.Error).Code).Should(Equal(errorInvalidParameter.Code))
+				Expect(err.(*errorx.Error).Message).Should(Equal(errorInvalidParameter.Message))
+				Expect(err.(*errorx.Error).Type).Should(Equal(errorInvalidParameter.Type))
+				Expect(result).Should(BeNil())
 			}, SpecTimeout(time.Second*2))
 		})
 	})

@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 
 	"devoratio.dev/web-resume/internal/errorx"
 	"devoratio.dev/web-resume/internal/hasher"
@@ -29,7 +28,7 @@ func NewUsecase(authRepo AuthenticationRepository) *Authentication {
 func (a *Authentication) Authenticate(ctx context.Context, identifier, password string) (*model.Owner, error) {
 	ownerAccount, err := a.authRepo.GetOwnerByUsernameOrEmail(ctx, identifier)
 	if err != nil {
-		if errors.Is(err, errorx.ErrNotFound) {
+		if errorx.Is(err, errorx.ErrNotFound) {
 			return nil, errorx.New(errorx.TypeInvalidParameter, invalidInputMessage, err)
 		}
 		return nil, err
@@ -37,7 +36,7 @@ func (a *Authentication) Authenticate(ctx context.Context, identifier, password 
 
 	err = hasher.VerifyPassword(ownerAccount.Password, password)
 	if err != nil {
-		if errors.Is(err, errorx.ErrNotMatch) {
+		if errorx.Is(err, errorx.ErrNotMatch) {
 			return nil, errorx.New(errorx.TypeInvalidParameter, invalidInputMessage, err)
 		}
 		return nil, err
