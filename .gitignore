@@ -11,6 +11,7 @@
 # Coverage or test result
 *.out
 *.profile
+report.xml
 
 # IDE
 .idea
