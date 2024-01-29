@@ -30,19 +30,20 @@ func New(errType Type, msg string, e interface{}) *Error {
 		c = http.StatusInternalServerError
 	}
 
+	stack := make([]uintptr, MaxStackDepth)
+	length := runtime.Callers(2, stack[:])
 	var err error
 
 	switch e := e.(type) {
 	case *Error:
-		return e
+		err = e.Err
+		stack = e.stack
+		length = len(e.stack)
 	case error:
 		err = e
 	default:
 		err = fmt.Errorf("%v", e)
 	}
-
-	stack := make([]uintptr, MaxStackDepth)
-	length := runtime.Callers(2, stack[:])
 
 	return &Error{
 		Code:    c,

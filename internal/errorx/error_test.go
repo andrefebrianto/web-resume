@@ -210,6 +210,14 @@ func TestIs(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "compare wrapped error with wrapped error",
+			args: args{
+				e:        ErrForbidden,
+				original: ErrForbidden,
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
