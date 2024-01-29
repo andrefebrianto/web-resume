@@ -12,7 +12,7 @@ const hashCost = 12
 func GenerateFromPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), hashCost)
 	if err != nil {
-		return "", err
+		return "", errorx.New(errorx.TypeInternal, errorx.TypeInternal.String(), err)
 	}
 
 	return string(hashedPassword), nil
