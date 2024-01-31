@@ -3,7 +3,9 @@ package config
 import "time"
 
 type Application struct {
-	Service Service `mapstructure:"service"`
+	Service        Service        `mapstructure:"service"`
+	Usecase        Usecase        `mapstructure:"usecase"`
+	Authentication Authentication `mapstructure:"authentication"`
 }
 
 type Service struct {
@@ -34,4 +36,11 @@ type PostgreSQLInstance struct {
 type DatabaseCredential struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
+}
+
+type Usecase struct {
+}
+
+type Authentication struct {
+	SigningKey []byte `mapstructure:"signingkey"`
 }
