@@ -1,6 +1,6 @@
 package model
 
 type Claim struct {
-	UserID   int    `json:"userid"`
+	UserID   uint   `json:"userid"`
 	Username string `json:"username"`
 }
