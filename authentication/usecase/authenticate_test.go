@@ -63,7 +63,7 @@ var _ = Describe("Authenticate user credential", Label("authentication"), func()
 		})
 
 		Context("owner data retrieved successfully", func() {
-			It("sends access token and refresh token to the user", func() {
+			It("sends user data", func() {
 				password := "veryverysecurepassword"
 
 				authenticationRepoMock.EXPECT().GetOwnerByUsernameOrEmail(commonCtx, identifier).Return(&ownerAccountStub, nil)
