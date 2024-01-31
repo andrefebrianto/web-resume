@@ -24,7 +24,7 @@ func GenerateAccessToken(claim model.Claim, signingKey []byte) (string, error) {
 	claims := CustomClaims{
 		claim,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(currentTime.Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(currentTime.Add(2 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(currentTime),
 			NotBefore: jwt.NewNumericDate(currentTime),
 			Issuer:    issuer,
